@@ -209,7 +209,6 @@ DEPENDENCIES
   rspec-rails (= 3.7.2)
   sass-rails (~> 5.0.3)
   simplecov
-  sprockets (= 3.6.3)
   sqlite3
   uglifier (>= 2.7.1)
 
