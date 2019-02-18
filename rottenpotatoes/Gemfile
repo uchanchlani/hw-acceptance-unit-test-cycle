@@ -36,7 +36,7 @@ gem 'uglifier', '>= 2.7.1'
 
 gem 'jquery-rails'
 gem 'haml'
-gem 'sprockets', '3.6.3'
+# gem 'sprockets', '3.6.3'
 
 # Use unicorn as the web server
 # gem 'unicorn'
