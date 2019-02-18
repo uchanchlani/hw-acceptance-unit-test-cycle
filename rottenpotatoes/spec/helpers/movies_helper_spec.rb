@@ -8,14 +8,14 @@ describe MoviesHelper do
 
   describe 'helper methods' do
     it 'should return odd' do
-      response = MoviesHelper.oddness 1
+      response = oddness 1
       expect(response).to eq("odd")
     end
   end
 
   describe 'helper methods' do
     it 'should return even' do
-      response = MoviesHelper.oddness 12
+      response = oddness 12
       expect(response).to eq("even")
     end
   end

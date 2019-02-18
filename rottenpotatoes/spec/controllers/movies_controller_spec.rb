@@ -2,8 +2,9 @@ require 'rails_helper'
 
 describe MoviesController do
   before(:each) do
-    @movie1 = FactoryBot.create(:movie, id: 1, title: "test1", rating: "G", description: "test", release_date: "test", director: "test")
-    @movie2 = FactoryBot.create(:movie, id: 2, title: "test2", rating: "G", description: "test", release_date: "test", director: "test")
+    @movie1 = FactoryBot.create(:movie, id: '1', title: "test1", rating: "G", description: "test", release_date: "test", director: "test")
+    @movie2 = FactoryBot.create(:movie, id: '2', title: "test2", rating: "G", description: "test", release_date: "test", director: "test")
+    @movie3 = FactoryBot.create(:movie, id: 3, title: "no director", rating: "G", description: "test", release_date: "test")
   end
 
   describe 'preexisting method test in before(:each)' do
@@ -45,31 +46,48 @@ describe MoviesController do
       expect(flash[:notice]).to be_present
 
     end
+
+    it 'should render two movies' do
+      get :index
+      response.should render_template :index
+    end
+
+    it 'should update render edit view' do
+      Movie.should_receive(:find).with('1')
+      get :edit,
+          {id: '1'}
+    end
+
+    it 'should update data correctly' do
+      Movie.stub(:find).and_return(@movie1)
+      put :update,
+          :id => @movie1[:id],
+          :movie => {title: "new_title", rating: "G", description: "test", release_date: "test", director: "test"}
+      expect(flash[:notice]).to be_present
+    end
+
+    it 'should delete data correctly' do
+      Movie.stub(:find).and_return(@movie1)
+      delete :destroy,
+             :id => @movie1[:id]
+      expect(flash[:notice]).to be_present
+    end
+
   end
 
-  it 'should render two movies' do
-    get :index
-    response.should render_template :index
-  end
+  describe 'director methods test in before(:each)' do
+    it 'should call appropriate model method' do
+      Movie.should_receive(:similar_movies).with(@movie1[:id], {'director' => @movie1[:director]})
+      get :similar, :id => @movie1[:id], :criteria => 'director'
+    end
 
-  it 'should update render edit view' do
-    Movie.should_receive(:find).with('1')
-    get :edit,
-        {id: '1'}
-  end
+    it 'should redirect to homepage on invalid no director request' do
+      Movie.should_receive(:similar_movies).with(@movie3[:id], {'director' => @movie3[:director]})
+      Movie.stub(:similar_movies).with(@movie3[:id], {'director' => @movie3[:director]}).and_return(nil)
+      get :similar, :id => @movie3[:id], :criteria => 'director'
+      expect(flash[:notice]).to be_present
+      response.should redirect_to movies_path
+    end
 
-  it 'should update data correctly' do
-    Movie.stub(:find).and_return(@movie1)
-    put :update,
-        :id => @movie1[:id],
-        :movie => {title: "new_title", rating: "G", description: "test", release_date: "test", director: "test"}
-    expect(flash[:notice]).to be_present
-  end
-
-  it 'should delete data correctly' do
-    Movie.stub(:find).and_return(@movie1)
-    delete :destroy,
-        :id => @movie1[:id]
-    expect(flash[:notice]).to be_present
   end
 end
